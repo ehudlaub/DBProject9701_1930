@@ -56,7 +56,7 @@
 
 ### 4.2 שימוש ב־Mockaroo
 
-![Mockaroo](./screenshots/mockaroo.png)
+![Mockaroo](./screenshots/Mockaroo.png)
 
 ---
 
