@@ -52,7 +52,7 @@
 
 ### 4.1 יצירת סקריפט בפייתון
 
-![הזנת CSV](./screenshots/csv_import.png)
+![script](./screenshots/script.jpeg)
 
 ### 4.2 שימוש ב־Mockaroo
 
