@@ -50,15 +50,11 @@
 
 ## 4. שיטות אכלוס הנתונים
 
-### 4.1 הכנסת נתונים ידנית
-
-![הזנה ידנית](./screenshots/manual_insert.png)
-
-### 4.2 טעינת CSV דרך pgAdmin
+### 4.1 יצירת סקריפט בפייתון
 
 ![הזנת CSV](./screenshots/csv_import.png)
 
-### 4.3 שימוש ב־Mockaroo
+### 4.2 שימוש ב־Mockaroo
 
 ![Mockaroo](./screenshots/mockaroo.png)
 
