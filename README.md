@@ -142,7 +142,8 @@
 ![שאילתה Update 1](./screenshots/update1.png)
 ## 2.3 אילוצים באמצעות ALTER TABLE
 ## 2.4 טרנזקציות: COMMIT ו־ROLLBACK
-
+### Rollback עבור update 1 
+![שאילתה Update 1](./screenshots/Rollback1.png)
 \
 
 
