@@ -138,6 +138,8 @@
 
 
 ## 2.2 שאילתות DELETE ו־UPDATE
+### שאילתה Update 1 
+![שאילתה Update 1](./screenshots/update1.png)
 ## 2.3 אילוצים באמצעות ALTER TABLE
 ## 2.4 טרנזקציות: COMMIT ו־ROLLBACK
 
