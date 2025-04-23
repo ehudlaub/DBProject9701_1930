@@ -1,0 +1,9 @@
+SELECT 
+  r.residentId,
+  r.name,
+  r.admissionDate,
+  EXTRACT(YEAR FROM AGE(CURRENT_DATE, r.admissionDate)) AS years_in_home
+FROM Resident r
+LEFT JOIN Participates p ON r.residentId = p.residentId
+WHERE p.residentId IS NULL
+  AND AGE(CURRENT_DATE, r.admissionDate) < INTERVAL '3 years';

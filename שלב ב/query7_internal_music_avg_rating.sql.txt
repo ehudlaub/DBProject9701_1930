@@ -1,0 +1,11 @@
+SELECT 
+  i.instructorId,
+  i.name,
+  ROUND(AVG(f.rating), 2) AS avg_rating
+FROM Instructor i
+JOIN Activity a ON i.instructorId = a.instructorId
+JOIN Feedback f ON a.activityId = f.activityId
+WHERE a.title ILIKE '%Music%'
+  AND i.isExternal = false
+GROUP BY i.instructorId, i.name
+ORDER BY avg_rating DESC;

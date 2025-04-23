@@ -1,0 +1,10 @@
+SELECT 
+  r.residentId AS "Resident ID",
+  r.name AS "Name",
+  r.birthDate AS "Birth Date",
+  a.activityId AS "Activity ID"
+FROM Resident r
+JOIN Participates p ON r.residentId = p.residentId
+JOIN Activity a ON p.activityId = a.activityId
+WHERE EXTRACT(MONTH FROM r.birthDate) IN (4, 5)
+  AND a.endDate > CURRENT_DATE;

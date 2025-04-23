@@ -1,0 +1,14 @@
+SELECT 
+  r.residentId,
+  r.name,
+  a.activityId,
+  a.title AS activity_title,
+  f.rating,
+  f.comment,
+  f.feedbackDate
+FROM Resident r
+JOIN Feedback f ON r.residentId = f.residentId
+JOIN Activity a ON f.activityId = a.activityId
+WHERE f.feedbackDate >= (CURRENT_DATE - INTERVAL '3 years')
+  AND f.rating <= 2
+ORDER BY f.feedbackDate DESC

@@ -1,0 +1,10 @@
+SELECT 
+  i.instructorId AS "Instructor ID", 
+  i.name AS "Name", 
+  i.specialty AS "Specialty", 
+  ROUND(AVG(f.rating), 2) AS "Average Rating"
+FROM Instructor i
+JOIN Activity a ON i.instructorId = a.instructorId
+JOIN Feedback f ON a.activityId = f.activityId
+GROUP BY i.instructorId, i.name, i.specialty
+HAVING AVG(f.rating) > 3;

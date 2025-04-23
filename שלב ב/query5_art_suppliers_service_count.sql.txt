@@ -1,0 +1,12 @@
+SELECT 
+  s.supplierId,
+  s.name AS supplier_name,
+  s.serviceType,
+  COUNT(*) AS supply_count
+FROM Supplier s
+JOIN supplies sp ON s.supplierId = sp.supplierId
+JOIN Activity a ON sp.activityId = a.activityId
+WHERE s.serviceType = 'Art Supplies'
+  AND a.title ILIKE '%Art%'
+GROUP BY s.supplierId, s.name, s.serviceType
+ORDER BY supply_count DESC

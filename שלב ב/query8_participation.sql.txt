@@ -1,0 +1,11 @@
+SELECT 
+  i.instructorId,
+  i.name,
+  i.specialty,
+  COUNT(DISTINCT a.activityId) AS activities_count,
+  ROUND(AVG(a.currentParticipants::numeric / a.maxParticipants) * 100, 2) AS avg_participation_percent
+FROM Instructor i
+JOIN Activity a ON i.instructorId = a.instructorId
+GROUP BY i.instructorId, i.name, i.specialty
+HAVING AVG(a.currentParticipants::numeric / a.maxParticipants) > 0.5
+ORDER BY avg_participation_percent DESC;
