@@ -149,23 +149,24 @@
 בוצע COMMIT (שמירה סופית של השינויים) עבור:
 
 שאילתת מחיקה 1
-
+![מחיקה 1](./screenshots/Delete1.png)
 שאילתת מחיקה 2
-
+![מחיקה 2](./screenshots/Delete2.png)
 שאילתת עדכון 2
-
+![עדכון 2](./screenshots/Rollback2.png)
 שאילתת עדכון 4
-
+![עדכון 4](./screenshots/Rollback4.png)
 בוצע ROLLBACK (ביטול השינויים) עבור:
 
 שאילתת מחיקה 3
-
+![מחיקה 3](./screenshots/Delete3.png)
 שאילתת מחיקה 4
-
+![מחיקה 4](./screenshots/Delete4.png)
 שאילתת עדכון 1
 ![עדכון 1](./screenshots/Rollback1.png)
 
 שאילתת עדכון 3
+![עדכון 3](./screenshots/Rollback3.png)
 ## 2.4 אילוצים באמצעות ALTER TABLE
 
 
