@@ -197,19 +197,23 @@
 ### אילוץ 1: NOT NULL בטבלת Activity  
 הוספת אילוץ שמחייב את שדה `title` להיות לא ריק.
 
-![הוספת אילוץ 1](./screenshots/constraint1_add.png)  
+![הוספת אילוץ 1](./screenshots/constraint1_add.png) 
+הוספת שורה עם ערך ריק לשדה title, דבר שגרם לשגיאה עקב אילוץ NOT NULL
 ![שגיאה אילוץ 1](./screenshots/constraint1_error.png)
 
-### אילוץ 2: DEFAULT בטבלת Instructor  
-הוספת ערך ברירת מחדל `FALSE` לעמודה `isExternal`.
-
-![הוספת אילוץ 2](./screenshots/constraint2_add.png)  
-![שגיאה אילוץ 2](./screenshots/constraint2_error.png)
-
-### אילוץ 3: CHECK בטבלת Feedback  
+\### אילוץ 2: CHECK בטבלת Feedback  
 הוספת תנאי שמוודא שהדירוג (`rating`) נמצא בין 1 ל־5.
 
+![הוספת אילוץ 2](./screenshots/constraint2_add.png)  
+הוספת שורה עם ערך דירוג 7, החורג מהטווח המותר באילוץ CHECK.
+![שגיאה אילוץ 2](./screenshots/constraint2_error.png)
+
+
+### אילוץ 3: DEFAULT בטבלת Supplier  
+הוספת ערך ברירת מחדל `General` לעמודה `serviceType`.
+
 ![הוספת אילוץ 3](./screenshots/constraint3_add.png)  
+הוספת שורה ללא ציון סוג שירות – הערך הושלם אוטומטית כ־General בהתאם לערך ברירת המחדל.
 ![שגיאה אילוץ 3](./screenshots/constraint3_error.png)
 
 
