@@ -176,17 +176,12 @@
 ![מחיקה 2](./screenshots/comit2.png)
 שאילתת עדכון 2
 ![עדכון 2](./screenshots/comit3.png)
-שאילתת עדכון 4
-![עדכון 4](./screenshots/comit4.png)
 בוצע ROLLBACK (ביטול השינויים) עבור:
 
 שאילתת מחיקה 3
 ![מחיקה 3](./screenshots/rollback1.png)
-שאילתת מחיקה 4
-![מחיקה 4](./screenshots/rollback2.png)
 שאילתת עדכון 1
 ![עדכון 1](./screenshots/rollback3.png)
-
 שאילתת עדכון 3
 ![עדכון 3](./screenshots/rollback4.png)
 ## 2.4 אילוצים באמצעות ALTER TABLE
