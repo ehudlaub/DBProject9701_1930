@@ -201,7 +201,7 @@
 הוספת שורה עם ערך ריק לשדה title, דבר שגרם לשגיאה עקב אילוץ NOT NULL
 ![שגיאה אילוץ 1](./screenshots/constraint1_error.png)
 
-\### אילוץ 2: CHECK בטבלת Feedback  
+### אילוץ 2: CHECK בטבלת Feedback  
 הוספת תנאי שמוודא שהדירוג (`rating`) נמצא בין 1 ל־5.
 
 ![הוספת אילוץ 2](./screenshots/constraint2_add.png)  
