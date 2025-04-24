@@ -21,7 +21,7 @@
 - [2.1 שאילתות SELECT](#21-שאילתות-select)  
 - [2.2 שאילתות DELETE וUPDATE](#22-שאילתות-delete-וupdate)      
 - [2.3 טרנזקציות: COMMIT וROLLBACK](#23-טרנזקציות-commit-וrollback)
-- [2.4 אילוצים באמצעות ALTER TABLE](#24-אילוצים-באמצעות-alter-table)- 
+- [2.4 אילוצים באמצעות ALTER TABLE](#24-אילוצים-באמצעות-alter-table) 
 
 
 ### שלב 1 – עיצוב, בנייה ואכלוס נתונים
@@ -189,7 +189,28 @@
 ![עדכון 1](./screenshots/rollback3.png)
 שאילתת עדכון 3
 ![עדכון 3](./screenshots/rollback4.png)
+
+
+
+
 ## 2.4 אילוצים באמצעות ALTER TABLE
+### אילוץ 1: NOT NULL בטבלת Activity  
+הוספת אילוץ שמחייב את שדה `title` להיות לא ריק.
+
+![הוספת אילוץ 1](./screenshots/constraint1_add.png)  
+![שגיאה אילוץ 1](./screenshots/constraint1_error.png)
+
+### אילוץ 2: DEFAULT בטבלת Instructor  
+הוספת ערך ברירת מחדל `FALSE` לעמודה `isExternal`.
+
+![הוספת אילוץ 2](./screenshots/constraint2_add.png)  
+![שגיאה אילוץ 2](./screenshots/constraint2_error.png)
+
+### אילוץ 3: CHECK בטבלת Feedback  
+הוספת תנאי שמוודא שהדירוג (`rating`) נמצא בין 1 ל־5.
+
+![הוספת אילוץ 3](./screenshots/constraint3_add.png)  
+![שגיאה אילוץ 3](./screenshots/constraint3_error.png)
 
 
 \
