@@ -1,0 +1,4 @@
+ALTER TABLE Activity
+ALTER COLUMN title SET NOT NULL;
+
+
