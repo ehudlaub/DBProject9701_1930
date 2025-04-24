@@ -174,11 +174,11 @@
 בוצע COMMIT (שמירה סופית של השינויים) עבור:
 
 שאילתת מחיקה 1
-![מחיקה 1](./screenshots/comit1.png)
+![מחיקה 1](./screenshots/commit1.png)
 שאילתת מחיקה 2
-![מחיקה 2](./screenshots/comit2.png)
+![מחיקה 2](./screenshots/commit2.png)
 שאילתת עדכון 2
-![עדכון 2](./screenshots/comit3.png)
+![עדכון 2](./screenshots/commit3.png)
 בוצע ROLLBACK (ביטול השינויים) עבור:
 
 שאילתת מחיקה 3
