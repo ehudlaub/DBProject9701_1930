@@ -179,6 +179,8 @@
 ![מחיקה 2](./screenshots/commit2.png)
 שאילתת עדכון 2
 ![עדכון 2](./screenshots/commit3.png)
+
+
 בוצע ROLLBACK (ביטול השינויים) עבור:
 
 שאילתת מחיקה 3
