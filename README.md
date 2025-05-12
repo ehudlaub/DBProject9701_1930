@@ -232,12 +232,13 @@
 
 
 ### ERD – תרשים ישויות וקשרים החדש:
+![NEW ERD](שלב%20ג/newErd.png)
 
-![NEW ERD](שלב%30ג/newErd.png)
+
 
 ### DSD – תרשים סכמת הנתונים החדש:
 
-![NEW DSA](שלב%30ג/newErd.png)
+![NEW DSA](שלב%20ג/newDsd.png)
 
 ---
 
