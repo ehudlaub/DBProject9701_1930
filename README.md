@@ -260,7 +260,8 @@
 
 ## 1.4 יצירת views ו-שאילתות חדשות
 נבנה view ושאילתות חדשות על בסיס הוספת הטבלאות והעמודות החדשות.
-עשינו View על Activity ו-Participates שמשתתפים בהן:
+עשינו View על Activity ו-Participates שמשתתפים בהן
+
 עשינו שאילת שמראה כמה משתתפים בכול פעילות
 
 ![viewOne](שלב%20ג/viewOne.png) 
@@ -268,6 +269,7 @@
 
 ![viewTow](שלב%20ג/viewTow.png) 
 עשינו view חדש שמשלב בין Inventory ו-staff_member
+
 שאילת של כל הפריטים שמנוהלים ע"י טבח 
 ![viewThrre](שלב%20ג/viewThrre.png) 
 שאילת של סיכום פריטים לפי תפקיד
