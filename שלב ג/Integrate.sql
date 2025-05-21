@@ -1,2 +1,0 @@
-ALTER TABLE activity
-ADD COLUMN location VARCHAR(100);
