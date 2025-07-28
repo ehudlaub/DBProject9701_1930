@@ -282,9 +282,7 @@ VisitingEvent / Participates:
 
 
 -- שלב 1: הוספת עמודה room_id לטבלת resident1
-```sql
-ALTER TABLE resident1 ADD COLUMN room_id INT;
-```sql
+<pre> ```sql ALTER TABLE resident1 ADD COLUMN room_id INT; ``` </pre>
 
 -- שלב 2: הוספת מפתח זר לטבלה room
 ```sql
