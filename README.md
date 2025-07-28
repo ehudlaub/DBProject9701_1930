@@ -361,7 +361,10 @@ JOIN maintenance_req r ON s.staff_member_id = r.staff_member_id;
 
 SELECT * FROM staff_tasks_view;
 ```
+נשלוף את הנתנונים מהמבט.
 ![staff_tasks_view](שלב%20ג/staff_tasks_view.png)
+שאילתה המבוססת על המבט staff_tasks_view מציגה את מספר בקשות התחזוקה שכל עובד טיפל בהן בפועל.
+
 
 
 
