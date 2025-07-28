@@ -361,7 +361,8 @@ JOIN maintenance_req r ON s.staff_member_id = r.staff_member_id;
 
 SELECT * FROM staff_tasks_view;
 ```
-![staff_tasks_view](staff_tasks_view.png)
+![staff_tasks_view](שלב%20ג/staff_tasks_view.png)
+
 
 
 
