@@ -346,8 +346,6 @@ WHERE (ve.resident_id, ve.event_id) NOT IN (
 #### 3.5.2 מבט מהאגף שהתקבל
 נרצה ליצור מבט מנקודת המבט שהתקבל בו תיעוד של בקשות תחזוקה, תוך שילובן עם פרטי העובדים המטפלים בהן – לצורך הצגת משימות לפי איש צוות.
 ```sql
-DROP VIEW staff_tasks_view;
-
 CREATE VIEW staff_tasks_view AS
 SELECT 
     s.staff_member_id,
@@ -363,10 +361,7 @@ SELECT * FROM staff_tasks_view;
 ```
 נשלוף את הנתנונים מהמבט.
 ![staff_tasks_view](שלב%20ג/staff_tasks_view.png)
-ניצור שאילתה המבוססת על המבט staff_tasks_view מציגה את מספר בקשות התחזוקה שכל עובד טיפל בהן בפועל.
-
-![staff_tasks_query1](staff_tasks_query1.png)
-
+ניצור שאילתה המבוססת על המבט staff_tasks_view, השאילתה מציגה את מספר בקשות התחזוקה שכל עובד טיפל בהן בפועל.
 ```sql
 SELECT 
   staff_member_id,
@@ -376,7 +371,18 @@ FROM staff_tasks_view
 GROUP BY staff_member_id, staff_member_name
 ORDER BY total_requests DESC;
 ```
-
+![staff_tasks_query1](שלב%20ג/staff_tasks_query1.png)
+ניצור שאילתה נוספת המבוססת על מבט staff_tasks_view, שאילתה זאת מציגה את מספר בקשות התחזוקה שעדיין פתוחות, עבור כל תפקיד במערכת.
+```sql
+SELECT 
+  job_title,
+  COUNT(*) AS open_requests
+FROM staff_tasks_view
+WHERE req_status = 'open'
+GROUP BY job_title
+ORDER BY open_requests DESC;
+```
+![staff_tasks_query2](שלב%20ג/staff_tasks_query2.png)
 
 
 
