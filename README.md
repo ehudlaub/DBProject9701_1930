@@ -343,8 +343,46 @@ WHERE (ve.resident_id, ve.event_id) NOT IN (
 ## 3.5  יצירת views ו-שאילתות חדשות
 נבנה view ושאילתות חדשות על בסיס הוספת הטבלאות והעמודות החדשות.
 #### 3.5.1 מבט מהאגף המקורי שלנו
+ניצור מבט בשם resident_activities_view שמשלב בין מידע על דיירים לבין מידע על פעילויות שהם משתתפים בהן.
+```sql
+CREATE VIEW resident_activities_view AS
+SELECT 
+    r.residentid,
+    r.name,
+    r.birthDate,
+    a.activityid,
+    a.title,
+    a.startdate,
+    a.activity_location
+FROM resident r
+JOIN participates p ON r.residentid = p.residentid
+JOIN activity a ON p.activityid = a.activityid;
+```
+נשלוף את הנתונים מהמבט.
+שלב%20ג/resident_activities_view.png
+
+ניצור שאילתה המבוססת על המבט resident_activities_view, השאילתה מציגה את מספר הפעיליות בהם השתתף כל דייר.
+
+```sql
+SELECT residentid, name, COUNT(*) AS total_activities
+FROM resident_activities_view
+GROUP BY residentid, name
+ORDER BY total_activities DESC;
+```
+שלב%20ג/resident_activities_query1.png
+
+ניצור שאילתה נוספת המבוססת על מבט resident_activities_view, שאילתה זאת מציגה את מספר הפעיליות לפי מקום.
+```sql
+SELECT activity_location, COUNT(*) AS activity_count
+FROM resident_activities_view
+GROUP BY activity_location
+ORDER BY activity_count DESC;
+```
+שלב%20ג/resident_activities_query2.png
+
+
 #### 3.5.2 מבט מהאגף שהתקבל
-נרצה ליצור מבט מנקודת המבט שהתקבל בו תיעוד של בקשות תחזוקה, תוך שילובן עם פרטי העובדים המטפלים בהן – לצורך הצגת משימות לפי איש צוות.
+ניצור מבט נוסף בשם staff_tasks_view שמשלב בין מידע על בקשות תחזוקה לבין מידע על פרטי העובדים המטפלים בבקשות התחזוקה.
 ```sql
 CREATE VIEW staff_tasks_view AS
 SELECT 
