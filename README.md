@@ -281,19 +281,20 @@ VisitingEvent / Participates:
 בשלב זה ביצענו שינויים במסד הנתונים כדי לשלב את טבלת `resident` שהתקבלה מהאגף הנוסף, תוך שמירה על הקשרים הקיימים בטבלה שלנו. להלן סדר הפעולות:
 
 
--  שלב 1: הוספת עמודה room_id לטבלת resident1
+שלב 1 - מיזוג טבלת resident:
+-   הוספת עמודה room_id לטבלת resident1
 ```sql
 ALTER TABLE resident1 ADD COLUMN room_id INT;
 ```
 
-- שלב 2: הוספת מפתח זר לטבלה room
+- הוספת מפתח זר לטבלה room
 ```sql
 ALTER TABLE resident1
 ADD CONSTRAINT fk_room FOREIGN KEY (room_id)
 REFERENCES room(room_id);
 ```
 
-- שלב 3: עדכון הערכים בעמודה room_id מהטבלה המקורית שלנו
+- עדכון הערכים בעמודה room_id מהטבלה המקורית שלנו
 ```sql
 UPDATE resident1 r1
 SET room_id = r2.room_id
