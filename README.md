@@ -361,6 +361,7 @@ JOIN activity a ON p.activityid = a.activityid;
 נשלוף את הנתונים מהמבט.
 ![resident_activities_view](שלב%20ג/resident_activities_view.png)
 
+
 ניצור שאילתה המבוססת על המבט resident_activities_view, השאילתה מציגה את מספר הפעיליות בהם השתתף כל דייר.
 
 ```sql
