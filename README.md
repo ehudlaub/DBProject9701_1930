@@ -325,18 +325,22 @@ FROM event
 WHERE event_id NOT IN (SELECT activityId FROM Activity);
 ```
 שלב 3 - מיזוג הקשר 'visiting_event' והישות החלשה 'participates' לישות חלשה אחת:
+- מיזוג טבלת 'visiting_event' לתוך טבלת 'participates'
+  ```sql
+INSERT INTO Participates (residentId, activityId, registrationDate)
+SELECT 
+  ve.resident_id,
+  ve.event_id,
+  a.startDate
+FROM visiting_event ve
+JOIN Activity a ON ve.event_id = a.activityId
+WHERE (ve.resident_id, ve.event_id) NOT IN (
+  SELECT p.residentId, p.activityId
+  FROM Participates p
+);
+``` 
 
-## 1.3 עדכון הטבלאות
-בשלב זה נעשה שאילת של עדכון הטבלאות בהתמה לתרשים החדש
-נוסיף עמודות חדשות לטבלאות של Activity 
-###  עדכון טבלת  Activity
-מחקנו את טבלת event כי היא לא רלוונטית יש לנו את activity ולכן גם היינו צריכים לעדכן בטבלת visiting_event את המפתח זר שלו
-![newVisiting_event](שלב%20ג/newVisiting_event.png)
-
-הוספנו עמודה של מיקום הפעילות על פי רשימה של מיקומים קומה של הפעילות, חצר או גג
-![newActvity](שלב%20ג/addToActvity.png) 
-
-## 1.4 יצירת views ו-שאילתות חדשות
+## 3.5  יצירת views ו-שאילתות חדשות
 נבנה view ושאילתות חדשות על בסיס הוספת הטבלאות והעמודות החדשות.
 עשינו View על Activity ו-Participates שמשתתפים בהן
 
