@@ -342,7 +342,29 @@ WHERE (ve.resident_id, ve.event_id) NOT IN (
 
 ## 3.5  יצירת views ו-שאילתות חדשות
 נבנה view ושאילתות חדשות על בסיס הוספת הטבלאות והעמודות החדשות.
-עשינו View על Activity ו-Participates שמשתתפים בהן
+#### 3.5.1 מבט מהאגף המקורי שלנו
+#### 3.5.2 מבט מהאגף שהתקבל
+נרצה ליצור מבט מנקודת המבט שהתקבל בו תיעוד של בקשות תחזוקה, תוך שילובן עם פרטי העובדים המטפלים בהן – לצורך הצגת משימות לפי איש צוות.
+```sql
+DROP VIEW staff_tasks_view;
+
+CREATE VIEW staff_tasks_view AS
+SELECT 
+    s.staff_member_id,
+    s.staff_member_name,
+    s.job_title,
+    r.request_id,
+    r.req_description,
+    r.req_status
+FROM staff_member s
+JOIN maintenance_req r ON s.staff_member_id = r.staff_member_id;
+
+SELECT * FROM staff_tasks_view;
+```
+![staff_tasks_view](staff_tasks_view.png)
+
+
+
 
 עשינו שאילת שמראה כמה משתתפים בכול פעילות
 
