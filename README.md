@@ -363,7 +363,19 @@ SELECT * FROM staff_tasks_view;
 ```
 נשלוף את הנתנונים מהמבט.
 ![staff_tasks_view](שלב%20ג/staff_tasks_view.png)
-שאילתה המבוססת על המבט staff_tasks_view מציגה את מספר בקשות התחזוקה שכל עובד טיפל בהן בפועל.
+ניצור שאילתה המבוססת על המבט staff_tasks_view מציגה את מספר בקשות התחזוקה שכל עובד טיפל בהן בפועל.
+
+![staff_tasks_query1](staff_tasks_query1.png)
+
+```sql
+SELECT 
+  staff_member_id,
+  staff_member_name,
+  COUNT(*) AS total_requests
+FROM staff_tasks_view
+GROUP BY staff_member_id, staff_member_name
+ORDER BY total_requests DESC;
+```
 
 
 
