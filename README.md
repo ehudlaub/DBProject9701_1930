@@ -281,26 +281,50 @@ VisitingEvent / Participates:
 בשלב זה ביצענו שינויים במסד הנתונים כדי לשלב את טבלת `resident` שהתקבלה מהאגף הנוסף, תוך שמירה על הקשרים הקיימים בטבלה שלנו. להלן סדר הפעולות:
 
 
-שלב 1 - מיזוג טבלת resident:
+שלב 1 - מיזוג ישות resident:
 -   הוספת עמודה room_id לטבלת resident1
 ```sql
 ALTER TABLE resident1 ADD COLUMN room_id INT;
 ```
 
-- הוספת מפתח זר לטבלה room
+- הוספת מפתח זר לטבלה resident
 ```sql
 ALTER TABLE resident1
 ADD CONSTRAINT fk_room FOREIGN KEY (room_id)
 REFERENCES room(room_id);
 ```
 
-- עדכון הערכים בעמודה room_id מהטבלה המקורית שלנו
+- עדכון הערכים בעמודה room_id מהטבלה שהתקבלה
 ```sql
 UPDATE resident1 r1
 SET room_id = r2.room_id
 FROM resident r2
 WHERE r1.residentId = r2.resident_id;
 ```
+שלב 2 - מיזוג 'event' ו'activity' לישות אחת:
+-   הוספת עמודה activity_location לטבלת activity
+```sql
+ALTER TABLE Activity ADD COLUMN activity_location VARCHAR(100);
+``` 
+- מיזוג טבלת event לתוך Activity
+```sql
+INSERT INTO Activity (
+  activityId, startDate, endDate, title,
+  maxParticipants, currentParticipants, instructorId, activity_location
+)
+SELECT 
+  event_id,
+  event_date,
+  event_date,
+  event_name,
+  100,
+  0,
+  1,
+  event_location
+FROM event
+WHERE event_id NOT IN (SELECT activityId FROM Activity);
+```
+שלב 3 - מיזוג הקשר 'visiting_event' והישות החלשה 'participates' לישות חלשה אחת:
 
 ## 1.3 עדכון הטבלאות
 בשלב זה נעשה שאילת של עדכון הטבלאות בהתמה לתרשים החדש
