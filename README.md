@@ -326,7 +326,7 @@ WHERE event_id NOT IN (SELECT activityId FROM Activity);
 ```
 שלב 3 - מיזוג הקשר 'visiting_event' והישות החלשה 'participates' לישות חלשה אחת:
 - מיזוג טבלת 'visiting_event' לתוך טבלת 'participates'
-  ```sql
+```sql
 INSERT INTO Participates (residentId, activityId, registrationDate)
 SELECT 
   ve.resident_id,
