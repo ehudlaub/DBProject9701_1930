@@ -359,7 +359,7 @@ JOIN participates p ON r.residentid = p.residentid
 JOIN activity a ON p.activityid = a.activityid;
 ```
 נשלוף את הנתונים מהמבט.
-שלב%20ג/resident_activities_view.png
+![resident_activities_view](שלב%20ג/resident_activities_view.png)
 
 ניצור שאילתה המבוססת על המבט resident_activities_view, השאילתה מציגה את מספר הפעיליות בהם השתתף כל דייר.
 
@@ -369,7 +369,7 @@ FROM resident_activities_view
 GROUP BY residentid, name
 ORDER BY total_activities DESC;
 ```
-שלב%20ג/resident_activities_query1.png
+![resident_activities_query1](שלב%20ג/resident_activities_query1.png)
 
 ניצור שאילתה נוספת המבוססת על מבט resident_activities_view, שאילתה זאת מציגה את מספר הפעיליות לפי מקום.
 ```sql
@@ -378,7 +378,7 @@ FROM resident_activities_view
 GROUP BY activity_location
 ORDER BY activity_count DESC;
 ```
-שלב%20ג/resident_activities_query2.png
+![resident_activities_query2](שלב%20ג/resident_activities_query2.png)
 
 
 #### 3.5.2 מבט מהאגף שהתקבל
