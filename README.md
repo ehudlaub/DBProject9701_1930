@@ -490,6 +490,7 @@ BEGIN
 END;
 $$;
 ```
+כעת ננסה לרשום דייר לפעילות שכבר הסתיימה ונראה הודעה מתאימה.
 ![register_resident_to_activity](שלב%20ד/register_resident_to_activity.png)
 
 
