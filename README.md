@@ -446,10 +446,12 @@ ORDER BY open_requests DESC;
 הרצת שניי הפונקציות תתן לנו פלט של 652 שורות התוכנוית המלאה בקובץ sql בתייקיה
 ![mainFunction](שלב%20ד/mainFunction.png) 
 ## 4.2 פרוצדורות
-- פרוצדורה 1
-  הפרוצדורה register_resident_to_activity נועדה לרשום דייר לפעילות, בתנאי שהפעילות עדיין מתקיימת וטרם הגיעה למכסת המשתתפים. 
-  ```sql
-  CREATE OR REPLACE PROCEDURE register_resident_to_activity(
+
+- פרוצדורה 1  
+  הפרוצדורה `register_resident_to_activity` נועדה לרשום דייר לפעילות, בתנאי שהפעילות עדיין מתקיימת וטרם הגיעה למכסת המשתתפים. אם אחד התנאים לא מתקיים, נזרקת חריגה מתאימה. לאחר ההרשמה, מתבצע עדכון של מספר המשתתפים הנוכחי.
+
+```sql
+CREATE OR REPLACE PROCEDURE register_resident_to_activity(
     p_resident_id INT,
     p_activity_id INT
 )
@@ -478,7 +480,7 @@ BEGIN
     END IF;
 
     INSERT INTO participates(residentid, activityid, registrationdate)
-    VALUES (p_resident_id, p_activity_id, p_registration_date);
+    VALUES (p_resident_id, p_activity_id, CURRENT_DATE);
 
     UPDATE Activity
     SET currentparticipants = currentparticipants + 1
