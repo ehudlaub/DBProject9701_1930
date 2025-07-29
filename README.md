@@ -446,7 +446,52 @@ ORDER BY open_requests DESC;
 הרצת שניי הפונקציות תתן לנו פלט של 652 שורות התוכנוית המלאה בקובץ sql בתייקיה
 ![mainFunction](שלב%20ד/mainFunction.png) 
 ## 4.2 פרוצדורות
-פרוצדורה 1
+- פרוצדורה 1
+  הפרוצדורה register_resident_to_activity נועדה לרשום דייר לפעילות, בתנאי שהפעילות עדיין מתקיימת וטרם הגיעה למכסת המשתתפים. 
+  ```sql
+  CREATE OR REPLACE PROCEDURE register_resident_to_activity(
+    p_resident_id INT,
+    p_activity_id INT
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_max INT;
+    v_current INT;
+    v_end DATE;
+BEGIN
+    SELECT maxparticipants, currentparticipants, enddate
+    INTO v_max, v_current, v_end
+    FROM Activity
+    WHERE activityid = p_activity_id;
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'Activity % not found', p_activity_id;
+    END IF;
+
+    IF v_end < CURRENT_DATE THEN
+        RAISE EXCEPTION 'Activity % has already ended', p_activity_id;
+    END IF;
+
+    IF v_current >= v_max THEN
+        RAISE EXCEPTION 'Activity % is full', p_activity_id;
+    END IF;
+
+    INSERT INTO participates(residentid, activityid, registrationdate)
+    VALUES (p_resident_id, p_activity_id, p_registration_date);
+
+    UPDATE Activity
+    SET currentparticipants = currentparticipants + 1
+    WHERE activityid = p_activity_id;
+
+    RAISE NOTICE 'Resident % successfully registered to activity %', p_resident_id, p_activity_id;
+END;
+$$;
+```
+![register_resident_to_activity](שלב%20ד/register_resident_to_activity.png)
+
+
+  
 מסמנת דיירים שנמצאים במוסד מעל 10 שנים כ־"Veteran". כוללת CURSOR מפורש, לולאה, עדכון (UPDATE), הסתעפות ו־Exception.
 בשביל הפרצדורה הזאת היה צריך לעשות עידכון באפיון ולהוסיף עמודת sutus בטבלת resident.
 
