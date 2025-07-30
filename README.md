@@ -427,7 +427,7 @@ ORDER BY open_requests DESC;
 בשלב זה נכתוב תוכניות PL/pgSQL על טבלאות בסיס הנתונים המורחב שלנו. נרצה לאפשר מגוון פעולות ופרוצדורות בהם נוכל להשתמש.
 ## 4.1 רישום דייר לפעילות
 ---
-נרצה לאפשר רישום של דייר לפעילות תוך בדיקות תקינות ועדכון טבלאות רלוונטיות.
+- פרוצדורת רישום דייר לפעילות
 הפרוצדורה `register_resident_to_activity` נועדה לרשום דייר לפעילות, בתנאי שהפעילות עדיין מתקיימת וטרם הגיעה למכסת המשתתפים. אם אחד התנאים לא מתקיים, נזרקת חריגה מתאימה. לאחר ההרשמה, מתבצע עדכון של מספר המשתתפים הנוכחי.
 
 ```sql
@@ -473,6 +473,7 @@ $$;
 כעת ננסה לרשום דייר לפעילות שכבר הסתיימה ונראה הודעה מתאימה.
 ![register_resident_to_activity](שלב%20ד/register_resident_to_activity.png)
 
+- טריגר לרישום/מחיקת דייר לפעילות/מפעילות
 הטריגר update_current_participants_trigger מופעל לאחר הכנסת או מחיקת רשומה בטבלת participates. מטרתו לשמור על עדכון אוטומטי של עמודת currentparticipants בטבלת activity – מספר המשתתפים הנוכחיים בפעילות:
 כאשר דייר נרשם לפעילות (INSERT), הטריגר מעלה את מספר המשתתפים הנוכחי ב־1.
 כאשר דייר מוסר מפעילות (DELETE), הטריגר מפחית את מספר המשתתפים ב־1.
@@ -509,7 +510,7 @@ EXECUTE FUNCTION update_current_participants();
 ![trigar2_resident_to_activity](שלב%20ד/trigar2_resident_to_activity.png)
 
 ## 4.2 דוח על המדריכים
---
+---
 נרצה לספק דוח מסכם על כלל המדריכים במערכת. הדוח כולל מידע רלוונטי כגון מספר הפעילויות שהעביר כל מדריך, ותק בשנים, ממוצע הפידבקים שקיבל, וממוצע המשתתפים בפעילויות שהעביר. הדוח מתבצע באמצעות פונקציה print_all_instructors_report.
 ```sql
 CREATE OR REPLACE FUNCTION print_all_instructors_report()
@@ -569,6 +570,36 @@ $$;
 ומתקבלת ההדפסה:
 ![print_all_instructors_report](שלב%20ד/print_all_instructors_report.png) 
 
+## 4.3 ניהול תשלומים לספקים
+---
+נרצה להוסיף למערכת יכולת לנהל תשלומים עבור אספקת מוצרים לפעילויות. 
+-הרחבת הסכימה
+נוסיף עמודה isPaid מסוג BOOLEAN לטבלה Supplies, לציון האם התשלום בוצע. בנוסף ניצור טבלה חדשה payment_log לשמירת יומן פעולות תשלום, הכוללת את שדות log_id, supplier_id, activity_id, supply_date, log_date ו־final_paid.
+
+```sql
+ALTER TABLE supplies ADD COLUMN wasPaid BOOLEAN DEFAULT FALSE;
+
+CREATE TABLE payment_log (
+    log_id SERIAL PRIMARY KEY,
+    supplier_id INT NOT NULL,
+    supply_date DATE NOT NULL,
+    activity_id INT NOT NULL,
+    original_cost NUMERIC NOT NULL,
+    final_paid NUMERIC NOT NULL,
+    log_date DATE DEFAULT CURRENT_DATE,
+    FOREIGN KEY (supplier_id, supply_date, activity_id)
+        REFERENCES supplies(supplierId, supplyDate, activityId)
+);
+```
+
+-פונקציה לחישוב סכום לתשלום
+הפונקציה calculate_payment_with_interest(p_supplier_id, p_activity_id, p_supply_date) מחזירה את סכום התשלום לאחר חישוב ריבית של 3% על כל שנה של איחור.
+
+-פרוצדורת תשלום
+הפרוצדורה pay_supplier(p_supplier_id, p_activity_id, p_supply_date) מבצעת תשלום לספק תוך הפעולות הבאות: בודקת אם ההזמנה שולמה ומעדכנת את השדה isPaid ל־TRUE.
+
+-טריגר על תשלום
+הטריגר log_supplier_payment_trigger מופעל עם עדכון שדה isPaid ל־TRUE בטבלת Supplies. בעת הפעלתו נרשם תשלום מתאים ביומן PaymentsLog, כולל חישוב הסכום לתשלום (עם ריבית על איחור).
 
 
 
@@ -577,29 +608,6 @@ $$;
 
 
 
-
-
-נכתב שתיי פונקציות לא שיתנו לנו מידע לא טרויאלי.
-פונקציה ראשונה תמצא לנו את כל הדיירים בני 80 ומעלה.
-הקוד מפעיל פונקציה שמחזירה קורסור עם רשימת דיירים מבוגרים, ומבצע לולאת FETCH על כל שורה מתוכו.
-בכל איטרציה הוא מדפיס את מספר תעודת הזהות, השם ותאריך הלידה של הדייר באמצעות RAISE NOTICE.
-הפונקציה עצמה כנראה מבצעת SELECT מטבלת resident עם סינון על גיל .
-
-
-![firstFunction](שלב%20ד/firstFunction.png) 
-
-פונקציה שנייה מחזירה refcursor עם סיכום ביקורים של כל דייר. כוללת רשומות, לולאה, תנאי, חריגה (EXCEPTION), ו־DML פנימי.
-הפונקציה func_resident_visit_summary מחזירה סיכום של מספר הביקורים לכל דייר באמצעות refcursor.
-היא יוצרת טבלה זמנית, מבצעת שאילתת הצטרפות בין resident ל־visiting_event, מחשבת את סך הביקורים לכל דייר, ושומרת אותם לטבלה זמנית שממנה היא מחזירה את התוצאה.
-בנוסף, היא בודקת אם קיימים דיירים לפני הריצה ואם לא – זורקת חריגה
-
-![secondFunction](שלב%20ד/secondFunction.png) 
-
-הרצת שניי הפונקציות תתן לנו פלט של 652 שורות התוכנוית המלאה בקובץ sql בתייקיה
-![mainFunction](שלב%20ד/mainFunction.png) 
-## 4.2 פרוצדורות
-
-- פרוצדורה 1  
 
 
   
