@@ -540,10 +540,6 @@ $$ LANGUAGE plpgsql;
 ```
 לבחינה ויזואלית של תוצאת הדוח ניתן להפעיל את הפונקציה באמצעות בלוק אנונימי:
 
-sql
-Copy
-Edit
-
 ```sql
 DO $$
 DECLARE
@@ -568,12 +564,13 @@ END;
 $$;
 ```
 ומתקבלת ההדפסה:
+
 ![print_all_instructors_report](שלב%20ד/print_all_instructors_report.png) 
 
 ## 4.3 ניהול תשלומים לספקים
 ---
 נרצה להוסיף למערכת יכולת לנהל תשלומים עבור אספקת מוצרים לפעילויות. 
--הרחבת הסכימה
+- הרחבת הסכימה
 נוסיף עמודה isPaid מסוג BOOLEAN לטבלה Supplies, לציון האם התשלום בוצע. בנוסף ניצור טבלה חדשה payment_log לשמירת יומן פעולות תשלום, הכוללת את שדות log_id, supplier_id, activity_id, supply_date, log_date ו־final_paid.
 
 ```sql
@@ -592,52 +589,116 @@ CREATE TABLE payment_log (
 );
 ```
 
--פונקציה לחישוב סכום לתשלום
-הפונקציה calculate_payment_with_interest(p_supplier_id, p_activity_id, p_supply_date) מחזירה את סכום התשלום לאחר חישוב ריבית של 3% על כל שנה של איחור.
+- פונקציה לחישוב ריבית
+הפונקציה calculate_late_fee מחזירה את הסכום לתשלום לאחר הוספת ריבית של 3% עבור כל שנת איחור:
 
--פרוצדורת תשלום
-הפרוצדורה pay_supplier(p_supplier_id, p_activity_id, p_supply_date) מבצעת תשלום לספק תוך הפעולות הבאות: בודקת אם ההזמנה שולמה ומעדכנת את השדה isPaid ל־TRUE.
+```sql
+CREATE OR REPLACE FUNCTION calculate_late_fee(
+    p_cost NUMERIC,
+    p_supply_date DATE
+) RETURNS NUMERIC AS $$
+DECLARE
+    years_late INT;
+BEGIN
+    years_late := DATE_PART('year', AGE(CURRENT_DATE, p_supply_date));
+    RETURN ROUND(p_cost * POWER(1.03, years_late), 2);
+END;
+$$ LANGUAGE plpgsql;
+```
 
--טריגר על תשלום
-הטריגר log_supplier_payment_trigger מופעל עם עדכון שדה isPaid ל־TRUE בטבלת Supplies. בעת הפעלתו נרשם תשלום מתאים ביומן PaymentsLog, כולל חישוב הסכום לתשלום (עם ריבית על איחור).
+- פרוצדורת תשלום
+הפרוצדורה mark_supply_as_paid_row מסדירה את התשלום עבור שורת אספקה נתונה:
+היא מבצעת בדיקות תקינות (קיום ההזמנה, וידוא שטרם שולם), מחשבת את סכום התשלום בפועל באמצעות הפונקציה calculate_late_fee, מעדכנת את סטטוס התשלום (wasPaid), ומחזירה את הסכום ששולם בפועל כערך OUT.
+```sql
+CREATE OR REPLACE PROCEDURE mark_supply_as_paid_row(
+    IN p_supply_row supplies,
+    OUT p_amount_paid NUMERIC
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_exists supplies%ROWTYPE;
+BEGIN
+    SELECT * INTO v_exists
+    FROM supplies
+    WHERE supplierId = p_supply_row.supplierId
+      AND supplyDate = p_supply_row.supplyDate
+      AND activityId = p_supply_row.activityId;
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'Supply not found';
+    END IF;
+
+    IF v_exists.waspaid THEN
+        RAISE EXCEPTION 'Supply was already marked as paid';
+    END IF;
+
+    p_amount_paid := calculate_late_fee(v_exists.cost, v_exists.supplyDate);
+
+    UPDATE supplies
+    SET waspaid = TRUE
+    WHERE supplierId = p_supply_row.supplierId
+      AND supplyDate = p_supply_row.supplyDate
+      AND activityId = p_supply_row.activityId;
+END;
+$$;
+```
+
+- טריגר לתיעוד התשלום
+הטריגר trg_log_payment מופעל לאחר עדכון השדה wasPaid ל־TRUE. בעת ההפעלה נרשמת הפעולה בטבלת payment_log, יחד עם חישוב הסכום הסופי:
+```sql
+CREATE OR REPLACE FUNCTION log_payment_update() RETURNS TRIGGER AS $$
+DECLARE
+    v_paid NUMERIC;
+BEGIN
+    v_paid := calculate_late_fee(NEW.cost, NEW.supplyDate);
+
+    INSERT INTO payment_log (
+        supplier_id,
+        supply_date,
+        activity_id,
+        original_cost,
+        final_paid
+    ) VALUES (
+        NEW.supplierId,
+        NEW.supplyDate,
+        NEW.activityId,
+        NEW.cost,
+        v_paid
+    );
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE TRIGGER trg_log_payment
+AFTER UPDATE OF waspaid ON supplies
+FOR EACH ROW
+WHEN (NEW.waspaid = TRUE AND OLD.waspaid = FALSE)
+EXECUTE FUNCTION log_payment_update();
+```
+- תוכנית ראשית להרצת התשלום.
+```sql
+DO $$
+DECLARE
+    v_row supplies;
+    v_paid NUMERIC;
+BEGIN
+    SELECT * INTO v_row
+    FROM supplies
+    WHERE supplierId = 99
+      AND supplyDate = DATE '2020-06-15'
+      AND activityId = 999;
+
+    CALL mark_supply_as_paid_row(v_row, v_paid);
+    RAISE NOTICE 'its paid % ₪', v_paid;
+END;
+$$;
+```sql
+וכעת התשלום התעדכן בטבלה
+
+![payment](שלב%20ד/payment.png) 
 
 
 
-
-
-
-
-
-
-
-  
-פרוצדורה 2
-הפרוצדורה proc_delete_empty_staff_roles מזהה אנשי צוות שטור התפקיד (job_title) שלהם ריק או NULL, ומוחקת אותם מהטבלה.
-היא משתמשת בקורסור כדי לעבור אחד-אחד על השורות המתאימות, ומבצעת DELETE עם טיפול בשגיאות – כולל RAISE NOTICE למחיקה מוצלחת או RAISE WARNING במקרה של שגיאה.
-
-
-![secoundPr](שלב%20ד/secoundPr.png) 
-
-תוכנית ראשית להרצת 2 הפרוצדורות פלט של 1330 שורות
-
-![mainPr](שלב%20ד/mainPr.png) 
-
-## 4.3 טריגרים
-
-- טריגר 1
-
-
-
-
-נרצה שכאשר מנסים לשנות תאריך לידה של דייר אז תיזרק שגיאה.
-הטריגר trg_block_update_birthdate נועד למנוע עדכון של שדה תאריך הלידה (birthdate) בטבלת resident.
-הוא מופעל לפני כל עדכון (BEFORE UPDATE) ומשתמש בפונקציה prevent_birthdate_update שבודקת אם הערך החדש שונה מהישן – ובמקרה שכן, זורקת חריגה עם הודעת שגיאה מותאמת אישית.
-כך נשמרת שלמות הנתונים, והמשתמש אינו יכול לשנות תאריך לידה לדייר קיים.
-
-![truggerOne](שלב%20ד/truggerOne.png) 
-טריגר 2 
-נרצה שכאשר מנסים להוסיף דייר קיים תיזרק שגיאה.
-עשינו טריגר בשם trg_notify_insert שמופעל לאחר הכנסת שורה חדשה (AFTER INSERT) לטבלת resident.
-הטריגר מפעיל פונקציה my_trigger_func שמבצעת הודעת מערכת (RAISE NOTICE) – במקרה הזה עם הטקסט "נוספה שורה".
-כך בכל הוספה של דייר חדש, תופיע הודעה מיידית שמאשרת שהשורה הוכנסה, מבלי לשנות את הנתונים עצמם.
-![truggerTow](שלב%20ד/truggerTow.png) 
