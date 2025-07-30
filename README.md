@@ -510,8 +510,7 @@ EXECUTE FUNCTION update_current_participants();
 
 ## 4.2 דוח על המדריכים
 --
-נרצה לאפשר רישום של דייר לפעילות תוך בדיקות תקינות ועדכון טבלאות רלוונטיות.
-הפונקציה..........
+נרצה לספק דוח מסכם על כלל המדריכים במערכת. הדוח כולל מידע רלוונטי כגון מספר הפעילויות שהעביר כל מדריך, ותק בשנים, ממוצע הפידבקים שקיבל, וממוצע המשתתפים בפעילויות שהעביר. הדוח מתבצע באמצעות פונקציה print_all_instructors_report.
 ```sql
 CREATE OR REPLACE FUNCTION print_all_instructors_report()
 RETURNS VOID AS $$
@@ -538,7 +537,11 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 ```
-כאשר נריץ אץ הץוכנית האנונימית הזאת:
+לבחינה ויזואלית של תוצאת הדוח ניתן להפעיל את הפונקציה באמצעות בלוק אנונימי:
+
+sql
+Copy
+Edit
 
 ```sql
 DO $$
@@ -563,7 +566,7 @@ BEGIN
 END;
 $$;
 ```
-תתקבל התוצאה:
+ומתקבלת ההדפסה:
 ![print_all_instructors_report](שלב%20ד/print_all_instructors_report.png) 
 
 
