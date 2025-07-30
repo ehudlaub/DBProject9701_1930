@@ -424,31 +424,11 @@ ORDER BY open_requests DESC;
 
 
 ### שלב 4 – פונקציות, פרוצדורות וטריגרים
-בשלב זה נכתוב תוכניות PL/pgSQL על טבלאות בסיס הנתונים המורחב שלנו.
-## 4.1 פונקציות
+בשלב זה נכתוב תוכניות PL/pgSQL על טבלאות בסיס הנתונים המורחב שלנו. נרצה לאפשר מגוון פעולות ופרוצדורות בהם נוכל להשתמש.
+## 4.1 רישום דייר לפעילות
 ---
-נכתב שתיי פונקציות לא שיתנו לנו מידע לא טרויאלי.
-פונקציה ראשונה תמצא לנו את כל הדיירים בני 80 ומעלה.
-הקוד מפעיל פונקציה שמחזירה קורסור עם רשימת דיירים מבוגרים, ומבצע לולאת FETCH על כל שורה מתוכו.
-בכל איטרציה הוא מדפיס את מספר תעודת הזהות, השם ותאריך הלידה של הדייר באמצעות RAISE NOTICE.
-הפונקציה עצמה כנראה מבצעת SELECT מטבלת resident עם סינון על גיל .
-
-
-![firstFunction](שלב%20ד/firstFunction.png) 
-
-פונקציה שנייה מחזירה refcursor עם סיכום ביקורים של כל דייר. כוללת רשומות, לולאה, תנאי, חריגה (EXCEPTION), ו־DML פנימי.
-הפונקציה func_resident_visit_summary מחזירה סיכום של מספר הביקורים לכל דייר באמצעות refcursor.
-היא יוצרת טבלה זמנית, מבצעת שאילתת הצטרפות בין resident ל־visiting_event, מחשבת את סך הביקורים לכל דייר, ושומרת אותם לטבלה זמנית שממנה היא מחזירה את התוצאה.
-בנוסף, היא בודקת אם קיימים דיירים לפני הריצה ואם לא – זורקת חריגה
-
-![secondFunction](שלב%20ד/secondFunction.png) 
-
-הרצת שניי הפונקציות תתן לנו פלט של 652 שורות התוכנוית המלאה בקובץ sql בתייקיה
-![mainFunction](שלב%20ד/mainFunction.png) 
-## 4.2 פרוצדורות
-
-- פרוצדורה 1  
-  הפרוצדורה `register_resident_to_activity` נועדה לרשום דייר לפעילות, בתנאי שהפעילות עדיין מתקיימת וטרם הגיעה למכסת המשתתפים. אם אחד התנאים לא מתקיים, נזרקת חריגה מתאימה. לאחר ההרשמה, מתבצע עדכון של מספר המשתתפים הנוכחי.
+נרצה לאפשר רישום של דייר לפעילות תוך בדיקות תקינות ועדכון טבלאות רלוונטיות.
+הפרוצדורה `register_resident_to_activity` נועדה לרשום דייר לפעילות, בתנאי שהפעילות עדיין מתקיימת וטרם הגיעה למכסת המשתתפים. אם אחד התנאים לא מתקיים, נזרקת חריגה מתאימה. לאחר ההרשמה, מתבצע עדכון של מספר המשתתפים הנוכחי.
 
 ```sql
 CREATE OR REPLACE PROCEDURE register_resident_to_activity(
@@ -493,23 +473,7 @@ $$;
 כעת ננסה לרשום דייר לפעילות שכבר הסתיימה ונראה הודעה מתאימה.
 ![register_resident_to_activity](שלב%20ד/register_resident_to_activity.png)
 
-
-  
-פרוצדורה 2
-הפרוצדורה proc_delete_empty_staff_roles מזהה אנשי צוות שטור התפקיד (job_title) שלהם ריק או NULL, ומוחקת אותם מהטבלה.
-היא משתמשת בקורסור כדי לעבור אחד-אחד על השורות המתאימות, ומבצעת DELETE עם טיפול בשגיאות – כולל RAISE NOTICE למחיקה מוצלחת או RAISE WARNING במקרה של שגיאה.
-
-
-![secoundPr](שלב%20ד/secoundPr.png) 
-
-תוכנית ראשית להרצת 2 הפרוצדורות פלט של 1330 שורות
-
-![mainPr](שלב%20ד/mainPr.png) 
-
-## 4.3 טריגרים
-
-- טריגר 1
-טריגר update_current_participants_trigger מופעל לאחר הכנסת או מחיקת רשומה בטבלת participates. מטרתו לשמור על עדכון אוטומטי של עמודת currentparticipants בטבלת activity – מספר המשתתפים הנוכחיים בפעילות:
+הטריגר update_current_participants_trigger מופעל לאחר הכנסת או מחיקת רשומה בטבלת participates. מטרתו לשמור על עדכון אוטומטי של עמודת currentparticipants בטבלת activity – מספר המשתתפים הנוכחיים בפעילות:
 כאשר דייר נרשם לפעילות (INSERT), הטריגר מעלה את מספר המשתתפים הנוכחי ב־1.
 כאשר דייר מוסר מפעילות (DELETE), הטריגר מפחית את מספר המשתתפים ב־1.
 ```sql
@@ -543,6 +507,113 @@ EXECUTE FUNCTION update_current_participants();
 כעת נראה שכאשר נרשום דייר לפעילות השדה currentparticipants בטבלת activity יועדכן בהתאם.
 ![trigar1_resident_to_activity](שלב%20ד/trigar1_resident_to_activity.png)
 ![trigar2_resident_to_activity](שלב%20ד/trigar2_resident_to_activity.png)
+
+## 4.2 דוח על המדריכים
+--
+נרצה לאפשר רישום של דייר לפעילות תוך בדיקות תקינות ועדכון טבלאות רלוונטיות.
+הפונקציה..........
+```sql
+CREATE OR REPLACE FUNCTION print_all_instructors_report()
+RETURNS VOID AS $$
+DECLARE
+    rec RECORD;
+BEGIN
+    FOR rec IN
+        SELECT 
+            i.instructorId,
+            i.name AS instructor_name,
+            COUNT(a.activityId) AS total_activities,
+            DATE_PART('year', AGE(CURRENT_DATE, i.startDate)) AS years_of_experience,
+            ROUND(AVG(f.rating), 2) AS avg_feedback,
+            ROUND(AVG(a.currentParticipants), 2) AS avg_participants
+        FROM Instructor i
+        LEFT JOIN Activity a ON i.instructorId = a.instructorId
+        LEFT JOIN Feedback f ON a.activityId = f.activityId
+        GROUP BY i.instructorId, i.name, i.startDate
+        ORDER BY COUNT(a.activityId) DESC
+    LOOP
+        RAISE NOTICE 'Instructor: %, Activities: %, Experience: %, Avg Feedback: %, Avg Participants: %',
+            rec.instructor_name, rec.total_activities, rec.years_of_experience, rec.avg_feedback, rec.avg_participants;
+    END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+```
+כאשר נריץ אץ הץוכנית האנונימית הזאת:
+
+```sql
+DO $$
+DECLARE
+    cur refcursor;
+    rec RECORD;
+BEGIN
+    cur := get_all_instructors_report();
+
+    RAISE NOTICE '--- Instructors Report ---';
+
+    LOOP
+        FETCH cur INTO rec;
+        EXIT WHEN NOT FOUND;
+
+        RAISE NOTICE 'ID: %, Name: %, Activities: %, Experience: %, Avg Feedback: %, Avg Participants: %',
+            rec.instructorId, rec.instructor_name, rec.total_activities,
+            rec.years_of_experience, rec.avg_feedback, rec.avg_participants;
+    END LOOP;
+
+    CLOSE cur;
+END;
+$$;
+```
+תתקבל התוצאה:
+![print_all_instructors_report](שלב%20ד/print_all_instructors_report.png) 
+
+
+
+
+
+
+
+
+
+
+
+נכתב שתיי פונקציות לא שיתנו לנו מידע לא טרויאלי.
+פונקציה ראשונה תמצא לנו את כל הדיירים בני 80 ומעלה.
+הקוד מפעיל פונקציה שמחזירה קורסור עם רשימת דיירים מבוגרים, ומבצע לולאת FETCH על כל שורה מתוכו.
+בכל איטרציה הוא מדפיס את מספר תעודת הזהות, השם ותאריך הלידה של הדייר באמצעות RAISE NOTICE.
+הפונקציה עצמה כנראה מבצעת SELECT מטבלת resident עם סינון על גיל .
+
+
+![firstFunction](שלב%20ד/firstFunction.png) 
+
+פונקציה שנייה מחזירה refcursor עם סיכום ביקורים של כל דייר. כוללת רשומות, לולאה, תנאי, חריגה (EXCEPTION), ו־DML פנימי.
+הפונקציה func_resident_visit_summary מחזירה סיכום של מספר הביקורים לכל דייר באמצעות refcursor.
+היא יוצרת טבלה זמנית, מבצעת שאילתת הצטרפות בין resident ל־visiting_event, מחשבת את סך הביקורים לכל דייר, ושומרת אותם לטבלה זמנית שממנה היא מחזירה את התוצאה.
+בנוסף, היא בודקת אם קיימים דיירים לפני הריצה ואם לא – זורקת חריגה
+
+![secondFunction](שלב%20ד/secondFunction.png) 
+
+הרצת שניי הפונקציות תתן לנו פלט של 652 שורות התוכנוית המלאה בקובץ sql בתייקיה
+![mainFunction](שלב%20ד/mainFunction.png) 
+## 4.2 פרוצדורות
+
+- פרוצדורה 1  
+
+
+  
+פרוצדורה 2
+הפרוצדורה proc_delete_empty_staff_roles מזהה אנשי צוות שטור התפקיד (job_title) שלהם ריק או NULL, ומוחקת אותם מהטבלה.
+היא משתמשת בקורסור כדי לעבור אחד-אחד על השורות המתאימות, ומבצעת DELETE עם טיפול בשגיאות – כולל RAISE NOTICE למחיקה מוצלחת או RAISE WARNING במקרה של שגיאה.
+
+
+![secoundPr](שלב%20ד/secoundPr.png) 
+
+תוכנית ראשית להרצת 2 הפרוצדורות פלט של 1330 שורות
+
+![mainPr](שלב%20ד/mainPr.png) 
+
+## 4.3 טריגרים
+
+- טריגר 1
 
 
 
