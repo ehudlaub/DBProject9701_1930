@@ -495,10 +495,6 @@ $$;
 
 
   
-מסמנת דיירים שנמצאים במוסד מעל 10 שנים כ־"Veteran". כוללת CURSOR מפורש, לולאה, עדכון (UPDATE), הסתעפות ו־Exception.
-בשביל הפרצדורה הזאת היה צריך לעשות עידכון באפיון ולהוסיף עמודת sutus בטבלת resident.
-
-![firstPr](שלב%20ד/firstPr.png) 
 פרוצדורה 2
 הפרוצדורה proc_delete_empty_staff_roles מזהה אנשי צוות שטור התפקיד (job_title) שלהם ריק או NULL, ומוחקת אותם מהטבלה.
 היא משתמשת בקורסור כדי לעבור אחד-אחד על השורות המתאימות, ומבצעת DELETE עם טיפול בשגיאות – כולל RAISE NOTICE למחיקה מוצלחת או RAISE WARNING במקרה של שגיאה.
@@ -511,9 +507,46 @@ $$;
 ![mainPr](שלב%20ד/mainPr.png) 
 
 ## 4.3 טריגרים
-נעשה טריגרים שכאשר קורה כשהאירוע (Insert, Update) הוא יפעל.
 
-טריגר 1
+- טריגר 1
+טריגר update_current_participants_trigger מופעל לאחר הכנסת או מחיקת רשומה בטבלת participates. מטרתו לשמור על עדכון אוטומטי של עמודת currentparticipants בטבלת activity – מספר המשתתפים הנוכחיים בפעילות:
+כאשר דייר נרשם לפעילות (INSERT), הטריגר מעלה את מספר המשתתפים הנוכחי ב־1.
+כאשר דייר מוסר מפעילות (DELETE), הטריגר מפחית את מספר המשתתפים ב־1.
+```sql
+CREATE OR REPLACE FUNCTION update_current_participants()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF TG_OP = 'INSERT' THEN
+        UPDATE Activity
+        SET currentparticipants = currentparticipants + 1
+        WHERE activityid = NEW.activityid;
+    ELSIF TG_OP = 'DELETE' THEN
+        UPDATE Activity
+        SET currentparticipants = currentparticipants - 1
+        WHERE activityid = OLD.activityid;
+    END IF;
+
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_inc_current_participants
+AFTER INSERT ON participates
+FOR EACH ROW
+EXECUTE FUNCTION update_current_participants();
+
+CREATE TRIGGER trg_dec_current_participants
+AFTER DELETE ON participates
+FOR EACH ROW
+EXECUTE FUNCTION update_current_participants();
+```
+כעת נראה שכאשר נמחוק השתתפות של דייר מפעילות מסוימת השדה currentparticipants בטבלת activity יועדכן בהתאם.
+![register_resident_to_activity](שלב%20ד/triger1_resident_to_activity.png)
+![register_resident_to_activity](שלב%20ד/trigar2_resident_to_activity.png)
+
+
+
+
 נרצה שכאשר מנסים לשנות תאריך לידה של דייר אז תיזרק שגיאה.
 הטריגר trg_block_update_birthdate נועד למנוע עדכון של שדה תאריך הלידה (birthdate) בטבלת resident.
 הוא מופעל לפני כל עדכון (BEFORE UPDATE) ומשתמש בפונקציה prevent_birthdate_update שבודקת אם הערך החדש שונה מהישן – ובמקרה שכן, זורקת חריגה עם הודעת שגיאה מותאמת אישית.
