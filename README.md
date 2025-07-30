@@ -541,7 +541,7 @@ FOR EACH ROW
 EXECUTE FUNCTION update_current_participants();
 ```
 כעת נראה שכאשר נרשום דייר לפעילות השדה currentparticipants בטבלת activity יועדכן בהתאם.
-![triger1_resident_to_activity](שלב%20ד/triger1_resident_to_activity.png)
+![trigar1_resident_to_activity](שלב%20ד/trigar1_resident_to_activity.png)
 ![trigar2_resident_to_activity](שלב%20ד/trigar2_resident_to_activity.png)
 
 
