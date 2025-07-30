@@ -695,7 +695,7 @@ BEGIN
     RAISE NOTICE 'its paid % ₪', v_paid;
 END;
 $$;
-```sql
+```
 וכעת התשלום התעדכן בטבלה
 
 ![payment](שלב%20ד/payment.png) 
