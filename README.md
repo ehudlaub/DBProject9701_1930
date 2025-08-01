@@ -633,6 +633,12 @@ BEGIN
         RAISE EXCEPTION 'Supply was already marked as paid';
     END IF;
 
+    UPDATE supplies
+    SET waspaid = TRUE
+    WHERE supplierId = p_supply_row.supplierId
+      AND supplyDate = p_supply_row.supplyDate
+      AND activityId = p_supply_row.activityId;
+
     p_amount_paid := calculate_late_fee(v_exists.cost, v_exists.supplyDate);
 
 END;
