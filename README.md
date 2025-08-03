@@ -730,9 +730,14 @@ $$;
 
 ---
 
-## 5.3 מסכי מנהל
+## 5.3 מסך מנהל
 
-### 5.3.1 מסך ניהול פעילויות
+- כולל ארבעה קטגריות: ניהול פעילויות, ניהול הרשמה לפעילות, תשלומים לספקים ודוחות.
+- ![manager](שלב%20ה/screens/maneger.png)
+
+
+
+### 5.3.1 ניהול פעילויות
 
 - כולל שלוש פעולות: הוספה, עדכון ומחיקה של פעילויות.
 - פעולות אלו משפיעות על טבלת `Activity`.
@@ -749,32 +754,51 @@ $$;
 
 ![delete_activity](שלב%20ה/screens/delete_activity.png)
 
----
+#### צפייה בכל הפעיליות עם אפשרות סינון לפי מזהה פעילות וכותרת
+![view_activity](שלב%20ה/screens/view_activity.png)
 
-### 5.3.2 מסך רישום והסרת דיירים
-
-- הזנת מזהה דייר לצורך רישום לפעילות או הסרה ממנה.
-- מתבצעת קריאה לפרוצדורות `register_resident_to_activity` ו־`unregister_from_activity`.
-
-![participation_tab](שלב%20ה/screens/participation_tab.png)
 
 ---
 
-### 5.3.3 מסך דוחות
+### 5.3.2 רישום והסרת דיירים מפעילות
+
+#### רישום דייר לפעילות
+
+![participation_tab](שלב%20ה/screens/participation_add.png)
+
+
+#### מחיקת דייר מהשתתפות בפעילות מסוימת
+
+![participation_tab](שלב%20ה/screens/participation_delete.png)
+
+#### הצגת רשימת הרישומים לפעיליות, סינון ע"פ מזהה דייר ומזהה פעילות
+
+![participation_tab](שלב%20ה/screens/participation_view.png)
+
+
+---
+
+### 5.3.3 דוחות
 
 #### דוח מדריכים
-
-- מבוסס על הפעלת פונקציית `get_all_instructors_report()`.
-- כולל סינון לפי מזהה מדריך.
 
 ![instructor_report](שלב%20ה/screens/instructor_report.png)
 
 #### דוח ספקים פעילים
 
 - מציג נתוני סיכום לפי ספק.
-- מבוסס על שאילתת SELECT משלב ב'.
 
 ![top_suppliers](שלב%20ה/screens/top_suppliers.png)
+
+#### רשימת פדבקים נמוכים
+
+![low_feedback](שלב%20ה/screens/low_feedback.png)
+
+#### דיירים חדשים שלא השתתפו באף פעילות
+![new_resident](שלב%20ה/screens/new_resident.png)
+
+
+
 
 ---
 
@@ -782,15 +806,11 @@ $$;
 
 #### עסקאות שלא שולמו
 
-- שליפה מטבלת `supplies` של עסקאות עם `wasPaid = FALSE`.
 
 ![unpaid_supplies](שלב%20ה/screens/unpaid_supplies.png)
 
 #### תשלום לספק
 
-- חישוב ריבית דרך פונקציה `calculate_late_fee`.
-- קריאה לפרוצדורה `mark_supply_as_paid_row`.
-- הכנסת רשומה ליומן `payment_log` על ידי טריגר.
 
 ![pay_supplier](שלב%20ה/screens/pay_supplier.png)
 
@@ -802,7 +822,7 @@ $$;
 
 ---
 
-## 5.4 מסכי דייר
+## 5.4 מסך דייר
 
 ### 5.4.1 לוח ראשי לדייר
 
@@ -814,8 +834,6 @@ $$;
 
 ### 5.4.2 רישום לפעילות
 
-- הצגת פעילויות זמינות לפי תנאי הרשמה.
-- רישום מתבצע על ידי קריאה לפרוצדורה.
 
 ![join_activity](שלב%20ה/screens/join_activity.png)
 
